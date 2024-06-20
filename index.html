@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>apiserver</title>
+    <style>
+        body {
+            font-size: 2em;
+        }
+
+        button {
+            font-size: 1em;
+        }
+
+    </style>
+</head>
+<body>
+<h4>apiserver</h4>
+
+<div id="container"></div>
+<br>
+<div id="result"></div>
+<template id="group_template">
+
+    <button id="apiBtn" class="group_btn"></button>
+    <br>
+    <br>
+</template>
+
+<script>
+    let group_template = document.querySelector('#group_template');
+    let container = document.querySelector('#container');
+    let result = document.querySelector('#result');
+
+    async function get(url) {
+        let response = await fetch(url);
+        let contentType = response.headers.get("Content-Type");
+        if (!response.ok) {
+            return (`HTTP error! status: ${response.status}`);
+        } else {
+            if (contentType === 'application/json')
+                return await response.json();
+            else
+                return await response.text();
+        }
+    }
+
+
+    async function execute(name) {
+        result.innerText = await get(name);
+    }
+
+    async function start() {
+        let auto_run = async () => undefined;
+        for (let name of await get('list')) {
+            if (name === 'auto_run') {
+                auto_run = () => execute(name);
+                continue;
+            }
+            let group_instance = group_template.content.cloneNode(true);
+            let apiBtn = group_instance.querySelector('#apiBtn')
+            apiBtn.id = `group-${name}`
+            apiBtn.innerHTML = name
+            apiBtn.href = '#'
+            container.appendChild(group_instance);
+            apiBtn.onclick = async (event) => {
+                apiBtn.disabled = true
+                await execute(name);
+                apiBtn.disabled = false
+            }
+        }
+        await auto_run();
+    }
+
+
+    start();
+</script>
+</body>
+</html>
