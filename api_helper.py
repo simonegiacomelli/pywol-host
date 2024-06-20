@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import Callable
 from urllib.parse import urlparse, parse_qs
 
+print = partial(print, flush=True)
+
 
 class RequestHandler(SimpleHTTPRequestHandler):
     auth_file = Path('.auth.txt')  # username:password see RFC 7617
