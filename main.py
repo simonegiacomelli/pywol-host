@@ -12,9 +12,10 @@ def os_system(cmd):
 
 class ApiServer(api_helper.ApiHandler):
     def API_beep(self):
-        return os_system('beep')
+        return os_system('beep -f 700 -l 100')
 
     def API_suspend(self):
+        os_system('bash -c "beep -f 1800 &"')
         return os_system('systemctl suspend')
 
 
